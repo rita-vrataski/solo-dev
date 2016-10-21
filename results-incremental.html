@@ -675,6 +675,9 @@
             $('#results-runcount').text(totalruns);
             //populateDriverSearch();
         }
+		
+		/* =================== END handleChanges  ========================*/
+		
         function handleInitResults(data) {
             console.log('parsing new results data');
 
@@ -709,12 +712,14 @@
             else if (sort == 'class') { sortClass(selectedClass); }
         
             $('#results-lastupdated').text(lastpoll);
-			$('#lastupdated').text(lastpoll);
+			//$('#lastupdated').text(lastpoll);
             $('#results-runcount').text(totalruns);
             $('#resulttimes').listview('refresh');
             populateDriverSearch();
             
         }
+		
+		
         //function handleResults(data) {
 
         //    //console.log('parsing new results data');
