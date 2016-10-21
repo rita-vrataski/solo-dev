@@ -620,6 +620,7 @@
             else sortRaw();
         }
 
+    /* =============== Start HandleChanges ========================  */
         function handleChanges(data) {
             console.log('changes received: ' + data.drivers.length);
             //data = array of {drivers}
@@ -676,7 +677,9 @@
             //populateDriverSearch();
         }
 		
-		/* =================== END handleChanges  ========================*/
+	/* =================== END handleChanges  ========================*/
+	
+	/* =================== Start handleInitResults  ==================*/
 		
         function handleInitResults(data) {
             console.log('parsing new results data');
