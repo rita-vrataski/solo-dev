@@ -346,8 +346,9 @@
                     , 'left': $(window).width() / 2 - 100
                 }).appendTo($.mobile.pageContainer)
                 .delay(100);
-			socket.emit('join-runs');
+			
             socket.emit('init-results');
+			socket.emit('join-runs');
 			
         });
 
@@ -360,7 +361,7 @@
         });
 
 		
-		
+		socket.emit('join-runs');
         socket.on('init-results', handleInitResults);
 
         socket.on('changes', handleChanges);
