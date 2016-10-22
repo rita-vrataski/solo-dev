@@ -346,6 +346,7 @@
                     , 'left': $(window).width() / 2 - 100
                 }).appendTo($.mobile.pageContainer)
                 .delay(100);
+			socket.emit('join-runs');
             socket.emit('init-results');
 			
         });

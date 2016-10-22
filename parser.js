@@ -57,6 +57,7 @@ function doit(datafile, setgs) {
         var r = rows[i];
         var runParsed = parse(r);
         if (runParsed != null) {
+			
             runs.push(runParsed);
         }
     }
