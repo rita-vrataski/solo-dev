@@ -346,9 +346,7 @@
                     , 'left': $(window).width() / 2 - 100
                 }).appendTo($.mobile.pageContainer)
                 .delay(100);
-			
             socket.emit('init-results');
-			//socket.emit('join-runs');
 			
         });
 
@@ -361,7 +359,7 @@
         });
 
 		
-		//socket.on('runs', handleRuns);
+		
         socket.on('init-results', handleInitResults);
 
         socket.on('changes', handleChanges);
@@ -702,10 +700,6 @@
             drivers.sort(function (a, b) {
                 return a.ranko < b.ranko ? -1 : a.ranko > b.ranko ? 1 : 0;
             });
-			
-			
-
-        
 
             $('#resulttimes').empty();
             for (var i = 0; i < data.drivers.length; i++) {
@@ -770,12 +764,6 @@
             runs = data.runs;
             lastpoll = data.lastpoll;
             totalruns = data.runcount;
-			
-			var last20 = [], runCount = data.runs.length;
-
-			for (var i = (runCount < 36 ? 0 : (runCount - 36)) ; i < runCount; i++) {
-            last20.push(data.runs[i]);
-			
             genRuns();
             $('#lastupdated').text(lastpoll);
             $('#runcount').text(totalruns);
