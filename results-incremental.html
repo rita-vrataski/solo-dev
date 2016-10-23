@@ -352,7 +352,13 @@
 			
         });
 
-        socket.on('connect', function () { if (reconnectmsg != null) { $('.msg-reconnect').fadeOut(400, function () { $(this).remove(); }); } });
+        socket.on('connect', function () { 
+			if (reconnectmsg != null) { 
+				$('.msg-reconnect').fadeOut(400, function () { 
+					$(this).remove(); 
+				}); 
+			} 
+		});
         socket.on('reconnect', function () { $('.msg-reconnect').fadeOut(400, function () { $(this).remove(); }); });
 
         socket.on('reconnect_failed', function () {
@@ -450,22 +456,29 @@
 
 	
 		$('#page-runs').bind('pageshow', function () {
-            activePage = 'runs';
+		
+			activePage = 'runs';
+            socket.emit('changes');
+            //socket.emit('init-runs', { doit: true });
+            socket.on('runs', handleRuns);
+            console.log('listening for runs');
+			
+            //activePage = 'runs';
 			//loaded[0] = true;
 			
 			//socket.on('results', handleResults);
 			//socket.on('ttod', handleTtod);
 			//socket.emit('init-results');
-			socket.on('runs', handleRuns);
+			//socket.on('runs', handleRuns);
 			//socket.on('ttod', handleTtod);
 			
 			//socket.emit('init-results');
 			
-            socket.emit('join-runs');
+            //socket.emit('join-runs');
 			//////socket.emit('ttod');
 			
 			//this was already commented out
-            socket.emit('init-runs', { doit: true });
+            //socket.emit('init-runs', { doit: true });
             
 			//socket.emit('results', { doit: true });
 			
@@ -475,7 +488,7 @@
 			
 			
 			//socket.on('ttod', handleTtod);
-			console.log('listening for runs');
+			//console.log('listening for runs');
         });
 		
 
