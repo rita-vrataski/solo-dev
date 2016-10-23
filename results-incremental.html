@@ -347,7 +347,7 @@
                 }).appendTo($.mobile.pageContainer)
                 .delay(100);
 				
-			socket.on('changes', handleChanges);
+			socket.emit('changes');
             //socket.emit('init-results');
 			
         });
@@ -693,6 +693,7 @@
             totalruns = data.runcount;
 			runs = data.runs;
 
+			
             //loop through changed drivers
             for (var i = 0; i < data.drivers.length; i++) {
                 var drv = data.drivers[i];

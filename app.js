@@ -307,7 +307,15 @@ io.sockets.on('connection', function (socket) {
 	
 	// Added this section below
 	socket.on('changes', function (d) {
-        socket.emit('changes', { drivers: data.drivers, lastpoll: data.poller.lastpoll.formatDate('hh:mm:ss t'), runcount: data.runs.length });
+		socket.join('runs');
+        var last20 = [], runCount = data.runs.length;
+
+        for (var i = (runCount < 36 ? 0 : (runCount - 36)) ; i < runCount; i++) {
+            last20.push(data.runs[i]);
+        }
+        socket.emit('changes', { runs: last20, lastpoll: data.poller.lastpoll.formatDate('hh:mm:ss t'), runcount: runCount });
+		
+        //socket.emit('changes', { drivers: data.drivers, lastpoll: data.poller.lastpoll.formatDate('hh:mm:ss t'), runcount: data.runs.length });
     });
 	// Added this section above
 	
