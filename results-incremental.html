@@ -543,7 +543,7 @@
 			max = max < 0 ? 0 : max;
 
 			var itm = ('<li data-role="list-divider"><h1>Last ' + showRuns + ' Runs</h1></li>');
-			el.append(itm)
+			el.append(itm);
 
 			for (var i = cnt - 1; i >= max; i--) {
 				var r = runs[i];
@@ -569,7 +569,7 @@
 				}
 
 				s += '</a></li>';
-				el.append($(s)
+				el.append(s);
 				//html.push(s);
 				n++;
 			}
@@ -583,7 +583,7 @@
 
             }
 
-        }
+		}
 
         function getResultHtml(p) {
             //p = participant record
@@ -772,7 +772,7 @@
             $('#results-runcount').text(totalruns);
             $('#resulttimes').listview('refresh');
             populateDriverSearch();
-			//populateRuns();
+			populateRuns();
             
         }
 		
