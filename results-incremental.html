@@ -347,7 +347,8 @@
                 }).appendTo($.mobile.pageContainer)
                 .delay(100);
 				
-			socket.emit('changes');
+			socket.emit('join-runs');
+			//socket.emit('changes');
             //socket.emit('init-results');
 			
         });
@@ -367,7 +368,7 @@
         });
 
 		
-		
+		socket.on('runs', handleRuns);
         socket.on('init-results', handleInitResults);
 
         socket.on('changes', handleChanges);
