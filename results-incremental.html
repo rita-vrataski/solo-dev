@@ -43,10 +43,10 @@
 		    <div data-role="navbar" class="custom-icons">
                 <ul>
                     <!--<li><a href="#dlg-carsearch" class="nb-carsearch" data-rel="dialog" data-role="button" data-transition="none" data-icon="custom">Car Search</a></li>-->
-					<li><a target="_parent" href="#dlg-carsearch" class="nb-carsearch" data-role="button" data-transition="none" data-icon="custom">Car Search</a></li>
-                    <li><a target="_parent" href="#page-ttod" class="nb-ttod" data-role="button" data-transition="none" data-icon="custom">TTOD</a></li>
-                    <li><a target="_parent" href="#page-runs" class="nb-runs" data-role="button" data-transition="none" data-icon="custom">Runs</a></li>
-                    <li><a target="_parent" href="#page-results" class="nb-results ui-btn-active ui-state-persist" data-transition="none" data-icon="custom">Results</a></li>
+					<li><a href="#dlg-carsearch" class="nb-carsearch" data-role="button" data-transition="none" data-icon="custom">Car Search</a></li>
+                    <li><a href="#page-ttod" class="nb-ttod" data-role="button" data-transition="none" data-icon="custom">TTOD</a></li>
+                    <li><a href="#page-runs" class="nb-runs" data-role="button" data-transition="none" data-icon="custom">Runs</a></li>
+                    <li><a href="#page-results" class="nb-results ui-btn-active ui-state-persist" data-transition="none" data-icon="custom">Results</a></li>
                 </ul>
 
             </div>
@@ -532,6 +532,58 @@
             }
 
         }
+		
+		
+		function populateRuns() {
+            var el = $('#runslist').empty();
+			var cnt = runs.length
+				, max = cnt - showRuns
+				, html = [], n = 0;
+
+			max = max < 0 ? 0 : max;
+
+			var itm = ('<li data-role="list-divider"><h1>Last ' + showRuns + ' Runs</h1></li>');
+			el.append(itm)
+
+			for (var i = cnt - 1; i >= max; i--) {
+				var r = runs[i];
+				//var s = '<li data-theme="' + (r.isDnf ? 'a' : r.getRerun ? 'e' : '') + '"><a href="/driver?cn=' + r.car.number + '&dn=' + r.driver + '" data-ajax="false">'
+				var s = '<li data-theme="' + (r.isDnf ? 'a' : r.getRerun ? 'e' : '') + '"><a id="run-' + r.runNumber + '-' + r.driverId + '">'
+					+ '<div class="rankcontainer" style="float:left;margin-right:12px;text-align:center;"><span class="rank">' + r.runNumber + '</span></div>'
+					//+ '<div class="carnumber"><span class="classrank">' + r.runNumber + '</span></div>'
+					
+					//+ '<div style="position:absolute;font-size:50px;opacity:.3;right:20%;font-style:italic;">' + r.car.number + '</div>'
+					//+ '<div style="position:absolute;font-size:50px;opacity:.3;right:20%;font-style:italic;">' + r.time.toFixed(3) + '</div>'
+					+ '<div class="carnumber"><span class="classrank">' +  r.time.toFixed(3) + '</span></div>'
+					
+					//+ '<h3 class="ui-li-heading">' + r.driver + ' <font style="font-weight:normal;">' + r.axclass + ' ' + r.car.number + '</font></h3>' 
+					+ '<h3 class="ui-li-heading">' + r.driver + '</h3>' 
+					+ '<p class="ui-li-desc">' +  r.car.description + '<br><strong>' + r.axclass + ' ' + r.car.number  + '</strong></p>' + ( ( r.getRerun || r.isDnf ||  r.cones == 0  ) ? ' ' : '<span class="ui-li-count">' + (r.cones == 1 ? r.cones + ' cone' : r.cones + ' cones' ) + ' </span>' ) ;
+				
+				if (r.isDnf) {
+					
+					//s += '<p class="ui-li-count">&nbsp;DNF&nbsp;</p>';
+					s += '<span class="ui-li-count">&nbsp;DNF&nbsp;</span>';
+				} else if (r.getRerun) {
+					s += '<span class="ui-li-count">RERUN</span>';
+				}
+
+				s += '</a></li>';
+				el.append($(s)
+				//html.push(s);
+				n++;
+			}
+
+			//el = $('#runslist').empty().html(html.join('')).listview('refresh').find('a').bind('click', showDriverFromRun);
+			el.find('a').click(showDriverFromRun);
+			
+			var ap = $.mobile.activePage;
+            if (ap != null && ap.attr('id') == 'page-runs') {
+                el.listview('refresh');
+
+            }
+
+        }
 
         function getResultHtml(p) {
             //p = participant record
@@ -695,6 +747,7 @@
                     $(this).remove();
                 });
             drivers = data.drivers;
+			runs = data.runs;
             lastpoll = data.lastpoll;
             totalruns = data.runcount;
             drivers.sort(function (a, b) {
@@ -719,6 +772,7 @@
             $('#results-runcount').text(totalruns);
             $('#resulttimes').listview('refresh');
             populateDriverSearch();
+			populateRuns();
             
         }
 		
