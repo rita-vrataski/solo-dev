@@ -347,9 +347,9 @@
                 }).appendTo($.mobile.pageContainer)
                 .delay(100);
 				
-			socket.emit('join-runs');
+			//socket.emit('join-runs');
 			//socket.emit('changes');
-            //socket.emit('init-results');
+            socket.emit('init-results');
 			
         });
 
@@ -368,7 +368,7 @@
         });
 
 		
-		socket.on('runs', handleRuns);
+		//socket.on('runs', handleRuns);
         socket.on('init-results', handleInitResults);
 
         socket.on('changes', handleChanges);
@@ -459,8 +459,12 @@
 		$('#page-runs').bind('pageshow', function () {
 		
 			activePage = 'runs';
+			if (!loaded[0]) {
+                socket.emit('results', { doit: true });
+                socket.on('results', handleResults);
+            }
 			socket.emit('join-runs');
-            socket.emit('changes');
+            //socket.emit('changes');
             //socket.emit('init-runs', { doit: true });
             socket.on('runs', handleRuns);
             console.log('listening for runs');
