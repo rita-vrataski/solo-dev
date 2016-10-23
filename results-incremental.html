@@ -689,6 +689,7 @@
                });
             lastpoll = data.lastpoll;
             totalruns = data.runcount;
+			runs = data.runs;
 
             //loop through changed drivers
             for (var i = 0; i < data.drivers.length; i++) {
@@ -728,6 +729,7 @@
             $('.lastpoll').text(lastpoll);
             $('#results-runcount').text(totalruns);
             //populateDriverSearch();
+			populateRuns();
         }
 		
 	/* =================== END handleChanges  ========================*/
@@ -748,7 +750,7 @@
                     $(this).remove();
                 });
             drivers = data.drivers;
-			runs = data.runs;
+			//runs = data.runs;
             lastpoll = data.lastpoll;
             totalruns = data.runcount;
             drivers.sort(function (a, b) {
@@ -773,7 +775,7 @@
             $('#results-runcount').text(totalruns);
             $('#resulttimes').listview('refresh');
             populateDriverSearch();
-			populateRuns();
+			//populateRuns();
             
         }
 		
