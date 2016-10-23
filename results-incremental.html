@@ -346,7 +346,9 @@
                     , 'left': $(window).width() / 2 - 100
                 }).appendTo($.mobile.pageContainer)
                 .delay(100);
-            socket.emit('init-results');
+				
+			socket.on('changes', handleChanges);
+            //socket.emit('init-results');
 			
         });
 
