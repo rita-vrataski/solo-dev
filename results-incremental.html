@@ -46,7 +46,7 @@
 					<li><a href="#dlg-carsearch" class="nb-carsearch" data-role="button" data-transition="none" data-icon="custom">Car Search</a></li>
                     <li><a href="#page-ttod" class="nb-ttod" data-role="button" data-transition="none" data-icon="custom">TTOD</a></li>
                     <li><a href="#page-runs" class="nb-runs" data-role="button" data-transition="none" data-icon="custom">Runs</a></li>
-                    <li><a href="#page-results" class="nb-results ui-btn-active ui-state-persist" data-transition="none" data-icon="custom">Results</a></li>
+                    <li><a href="/redirect" class="nb-results ui-btn-active ui-state-persist" data-transition="none" data-icon="custom">Results</a></li>
                 </ul>
 
             </div>
@@ -197,12 +197,12 @@
                 <button class="btn-number" data-inline="true">5</button>
                 <button class="btn-number" data-inline="true">6</button>
 				
-                </div>
-                <div data-role="controlgroup" data-type="horizontal">
+            </div>
+            <div data-role="controlgroup" data-type="horizontal">
                 <button class="btn-number" data-inline="true">7</button>
                 <button class="btn-number" data-inline="true">8</button>
                 <button class="btn-number" data-inline="true">9</button>
-				</div>
+			</div>
             <div data-role="controlgroup" data-type="horizontal">
                 <button class="btn-number" data-inline="true" data-icon="arrow-l">Delete</button>
 				<button class="btn-number" data-inline="true">0</button>
@@ -346,20 +346,11 @@
                     , 'left': $(window).width() / 2 - 100
                 }).appendTo($.mobile.pageContainer)
                 .delay(100);
-				
-			//socket.emit('join-runs');
-			//socket.emit('changes');
             socket.emit('init-results');
 			
         });
 
-        socket.on('connect', function () { 
-			if (reconnectmsg != null) { 
-				$('.msg-reconnect').fadeOut(400, function () { 
-					$(this).remove(); 
-				}); 
-			} 
-		});
+        socket.on('connect', function () { if (reconnectmsg != null) { $('.msg-reconnect').fadeOut(400, function () { $(this).remove(); }); } });
         socket.on('reconnect', function () { $('.msg-reconnect').fadeOut(400, function () { $(this).remove(); }); });
 
         socket.on('reconnect_failed', function () {
@@ -368,7 +359,7 @@
         });
 
 		
-		//socket.on('runs', handleRuns);
+		
         socket.on('init-results', handleInitResults);
 
         socket.on('changes', handleChanges);
@@ -457,34 +448,22 @@
 
 	
 		$('#page-runs').bind('pageshow', function () {
-		
-			activePage = 'runs';
-			if (!loaded[0]) {
-                socket.emit('results', { doit: true });
-                socket.on('results', handleResults);
-            }
-			socket.emit('join-runs');
-            //socket.emit('changes');
-            //socket.emit('init-runs', { doit: true });
-            socket.on('runs', handleRuns);
-            console.log('listening for runs');
-			
-            //activePage = 'runs';
+            activePage = 'runs';
 			//loaded[0] = true;
 			
 			//socket.on('results', handleResults);
 			//socket.on('ttod', handleTtod);
 			//socket.emit('init-results');
-			//socket.on('runs', handleRuns);
+			socket.on('runs', handleRuns);
 			//socket.on('ttod', handleTtod);
 			
 			//socket.emit('init-results');
 			
-            //socket.emit('join-runs');
+            socket.emit('join-runs');
 			//////socket.emit('ttod');
 			
 			//this was already commented out
-            //socket.emit('init-runs', { doit: true });
+            socket.emit('init-runs', { doit: true });
             
 			//socket.emit('results', { doit: true });
 			
@@ -494,7 +473,7 @@
 			
 			
 			//socket.on('ttod', handleTtod);
-			//console.log('listening for runs');
+			console.log('listening for runs');
         });
 		
 
@@ -512,12 +491,14 @@
             }
             $('#dlg-carsearch .btn-number').bind('vclick', function () {
                 var b = $(this).text();
-                if (b.toLowerCase() == 'clr') {
+                //if (b.toLowerCase() == 'clr') {
+				if (b.toLowerCase() == 'clear') {
                     search = '';
                     //dofilter('');
                     //console.log('clear');
                 }
-                else if (b.toLowerCase() == 'del') {
+				//else if (b.toLowerCase() == 'del') {
+                else if (b.toLowerCase() == 'delete') {
                     search = search.substr(0, search.length - 1);
                 }
                 else {
@@ -553,59 +534,6 @@
             }
 
         }
-		
-		
-		function populateRuns() {
-            var el = $('#runslist').empty();
-			//runs = data.runs;
-			var cnt = runs.length
-				, max = cnt - showRuns
-				, html = [], n = 0;
-
-			max = max < 0 ? 0 : max;
-
-			var itm = ('<li data-role="list-divider"><h1>Last ' + showRuns + ' Runs</h1></li>');
-			el.append(itm);
-
-			for (var i = cnt - 1; i >= max; i--) {
-				var r = runs[i];
-				//var s = '<li data-theme="' + (r.isDnf ? 'a' : r.getRerun ? 'e' : '') + '"><a href="/driver?cn=' + r.car.number + '&dn=' + r.driver + '" data-ajax="false">'
-				var s = '<li data-theme="' + (r.isDnf ? 'a' : r.getRerun ? 'e' : '') + '"><a id="run-' + r.runNumber + '-' + r.driverId + '">'
-					+ '<div class="rankcontainer" style="float:left;margin-right:12px;text-align:center;"><span class="rank">' + r.runNumber + '</span></div>'
-					//+ '<div class="carnumber"><span class="classrank">' + r.runNumber + '</span></div>'
-					
-					//+ '<div style="position:absolute;font-size:50px;opacity:.3;right:20%;font-style:italic;">' + r.car.number + '</div>'
-					//+ '<div style="position:absolute;font-size:50px;opacity:.3;right:20%;font-style:italic;">' + r.time.toFixed(3) + '</div>'
-					+ '<div class="carnumber"><span class="classrank">' +  r.time.toFixed(3) + '</span></div>'
-					
-					//+ '<h3 class="ui-li-heading">' + r.driver + ' <font style="font-weight:normal;">' + r.axclass + ' ' + r.car.number + '</font></h3>' 
-					+ '<h3 class="ui-li-heading">' + r.driver + '</h3>' 
-					+ '<p class="ui-li-desc">' +  r.car.description + '<br><strong>' + r.axclass + ' ' + r.car.number  + '</strong></p>' + ( ( r.getRerun || r.isDnf ||  r.cones == 0  ) ? ' ' : '<span class="ui-li-count">' + (r.cones == 1 ? r.cones + ' cone' : r.cones + ' cones' ) + ' </span>' ) ;
-				
-				if (r.isDnf) {
-					
-					//s += '<p class="ui-li-count">&nbsp;DNF&nbsp;</p>';
-					s += '<span class="ui-li-count">&nbsp;DNF&nbsp;</span>';
-				} else if (r.getRerun) {
-					s += '<span class="ui-li-count">RERUN</span>';
-				}
-
-				s += '</a></li>';
-				el.append(s);
-				//html.push(s);
-				n++;
-			}
-
-			//el = $('#runslist').empty().html(html.join('')).listview('refresh').find('a').bind('click', showDriverFromRun);
-			el.find('a').click(showDriverFromRun);
-			
-			var ap = $.mobile.activePage;
-            if (ap != null && ap.attr('id') == 'page-runs') {
-                el.listview('refresh');
-
-            }
-
-		}
 
         function getResultHtml(p) {
             //p = participant record
@@ -694,7 +622,6 @@
             else sortRaw();
         }
 
-    /* =============== Start HandleChanges ========================  */
         function handleChanges(data) {
             console.log('changes received: ' + data.drivers.length);
             //data = array of {drivers}
@@ -710,9 +637,7 @@
                });
             lastpoll = data.lastpoll;
             totalruns = data.runcount;
-			runs = data.runs;
 
-			
             //loop through changed drivers
             for (var i = 0; i < data.drivers.length; i++) {
                 var drv = data.drivers[i];
@@ -751,13 +676,7 @@
             $('.lastpoll').text(lastpoll);
             $('#results-runcount').text(totalruns);
             //populateDriverSearch();
-			populateRuns();
         }
-		
-	/* =================== END handleChanges  ========================*/
-	
-	/* =================== Start handleInitResults  ==================*/
-		
         function handleInitResults(data) {
             console.log('parsing new results data');
 
@@ -772,7 +691,6 @@
                     $(this).remove();
                 });
             drivers = data.drivers;
-			//runs = data.runs;
             lastpoll = data.lastpoll;
             totalruns = data.runcount;
             drivers.sort(function (a, b) {
@@ -793,15 +711,12 @@
             else if (sort == 'class') { sortClass(selectedClass); }
         
             $('#results-lastupdated').text(lastpoll);
-			//$('#lastupdated').text(lastpoll);
+			$('#lastupdated').text(lastpoll);
             $('#results-runcount').text(totalruns);
             $('#resulttimes').listview('refresh');
             populateDriverSearch();
-			//populateRuns();
             
         }
-		
-		
         //function handleResults(data) {
 
         //    //console.log('parsing new results data');
@@ -840,12 +755,6 @@
 
         function handleRuns(data) {
             
-			var last20 = [], runCount = data.runs.length;
-
-			for (var i = (runCount < 36 ? 0 : (runCount - 36)) ; i < runCount; i++) {
-				last20.push(data.runs[i]);
-			}
-			
             runs = data.runs;
             lastpoll = data.lastpoll;
             totalruns = data.runcount;

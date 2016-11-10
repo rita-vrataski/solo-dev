@@ -57,7 +57,6 @@ function doit(datafile, setgs) {
         var r = rows[i];
         var runParsed = parse(r);
         if (runParsed != null) {
-			
             runs.push(runParsed);
         }
     }
@@ -183,7 +182,7 @@ function driverObj(id, name, cls, scls) {
     return {
         id: id, name: name, axclass: cls, superClass: scls, best: 9999, bestpax: 9999
         , runCount: 0, totalRuns: 0, dnfCount: 0, cones: 0, reruns: 0, car: { description: '', number: '', year: 0, color: '' }, ranko: 0, rankc: 0, rankp: 0//, times: []
-        , rawDiffo: 0, rawDiffp: 0, paxDiffo: 0, paxDiffp: 0, classDiffo: 0, classDiffp: 0
+        , rawDiffo: 0, rawDiffp: 0, paxDiffo: 0, paxDiffp: 0, classDiffo: 0, classDiffp: 0, worst: 9999
     };
 }
 
@@ -256,6 +255,12 @@ function genstats(pr) {
     var ttodck = new ttoditem('-', null, '', 0, 'Cone Killer');
     var ttodlost = new ttoditem('-', null, '', 0, 'Most DNFs');
     var ttodrr = new ttoditem('-', null, '', 0, 'Most Reruns');
+	var ttodsc = new ttoditem('-', null, '', 99999, 'Stiffest Competition');
+	var ttodmir = new ttoditem('-', null, '', 0, 'Most Improved Rookie');
+	var ttodmi = new ttoditem('-', null, '', 0, 'Most Improved');
+	var ttodtwin1 = new ttoditem('-', null, '', 0, 'Twinsies');
+	var ttodtwin2 = new ttoditem('-', null, '', 0, 'Twinsies');
+
 
     var ttods = [];
     var drivers = [];
@@ -272,6 +277,10 @@ function genstats(pr) {
             if (ttodp.value > run.timepaxed && run.timepaxed > 0) {
                 ttodp = new ttoditem(run.driver, run.car, run.axclass, (run.timepaxed).toFixed(3), 'PAX Time');
             }
+			
+
+				
+
 			/*
             if (run.axclass.indexOf('L') == -1) {
                 if (ttodm.value > run.time) {
@@ -334,6 +343,15 @@ function genstats(pr) {
 		
         //if ( driver.bestpax > run.timepaxed) {
 		//if ( (driver.bestpax > run.timepaxed)  && !run.isDnf && !run.getRerun ) {
+			
+		// Calculate driver's worst time here
+		if ( (driver.worst < run.time)  && !run.isDnf && !run.getRerun && (maxRunsCounted == 0 || driver.runCount < maxRunsCounted) && ( driver.runCount > 1)) {
+            driver.worst = run.time;
+        } else {
+			driver.worst = 0;
+		}
+		
+		
 		if ( (driver.best > run.time)  && !run.isDnf && !run.getRerun && (maxRunsCounted == 0 || driver.runCount < maxRunsCounted)) {
             driver.best = run.time;
             driver.bestpax = run.timepaxed;
@@ -369,6 +387,8 @@ function genstats(pr) {
             rank++;
         }
     }
+	
+
 
     //drivers = rankClass2(drivers);
     drivers = parsers.rankClass3(drivers);
@@ -391,6 +411,11 @@ function genstats(pr) {
             }
         }
     }
+	
+	
+	// do class ranking
+	//drivers = parsers.rankClass3(drivers);
+	
 
     // do alerts
 
@@ -403,6 +428,7 @@ function genstats(pr) {
 
     data.drivers = drivers;
 
+	drivers = parsers.rankClass3(drivers);
     //loop through
     for (var i = 0; i < drivers.length; i++) {
         var drv = drivers[i];
@@ -415,9 +441,34 @@ function genstats(pr) {
         if (ttodrr.value < drv.reruns) {
             ttodrr = new ttoditem(drv.name, drv.car, drv.axclass, drv.reruns, "Got Practice (Reruns)");
         }
-    }
+		
+		var improvement = drv.worst - drv.best;
+		// Most improved rookie
+		if (ttodmir.value < (drv.worst - drv.best) && drv.worst > 0 && drv.axclass == "RK") {
+			ttodmir = new ttoditem(drv.name, drv.car, drv.axclass, (drv.worst - drv.best).toFixed(3), 'Most Improved Rookie');
 
-	data.ttod = [ttodr, ttodp, ttodck, ttodlost, ttodrr];
+		}
+		
+		// Most improved driver
+		if (ttodmi.value < (drv.worst - drv.best) && drv.worst > 0 && drv.axclass != "RK") {
+			ttodmi = new ttoditem(drv.name, drv.car, drv.axclass, (drv.worst - drv.best).toFixed(3), 'Most Improved');
+		}
+		
+		// Stiffest Competition
+		// If classdiff is smaller than ttodsc and not zero
+		
+		if (ttodsc.value > drv.classDiffp && drv.classDiffp > 0) {
+			var otherDriver = drivers[i-1];
+			var competition = otherDriver.name + ' and ' + drv.name;
+			ttodsc = new ttoditem( competition, drv.rankc, drv.axclass, (drv.classDiffp).toFixed(3), 'Stiffest Competition');
+			
+		}
+		
+    }
+	
+	// Removed the Lost in the Woods DNF reference here
+	data.ttod = [ttodr, ttodp, ttodck, ttodsc, ttodmir, ttodmi, ttodrr ];
+	//data.ttod = [ttodr, ttodp, ttodck, ttodlost, ttodrr];
     //data.ttod = [ttodr, ttodp, ttodm, ttodw, ttodss, ttodfun, ttodck, ttodlost, ttodrr];
     fs.readFile('data.json', 'utf8', function (err, djson) {
         var dt = new Date();
@@ -538,7 +589,9 @@ var parsers = {
             }
         }
         return ds;
-    }
+    } // End rankclass3 function
+	
+	
     , 'rankClass2': function (drivers) {
         var ds = drivers;
         ds.sort(function (a, b) {
@@ -567,7 +620,7 @@ var parsers = {
         }
 
         return ds;
-    }
+    } // End rankclass2 function
 };
 
 function rankClass2(drivers) {
